@@ -40,8 +40,17 @@ it('Should correctly set bossVsBoss flag to true when Optimus and Predaking figh
 
     const battleResult = _battle(decepticons, autobots);
 
-    expect(battleResult.bossVsBoss).toBe(true);
-    expect(battleResult.battles).toEqual(1);
+    expect(battleResult).toEqual({ 
+      battles: 1,
+      winningTeam: [],
+      winningTeamName: null,
+      loosingTeamName: null,
+      loosingTeam: [],
+      survivors: [],
+      autobots: [],
+      decepticons: [],
+      bossVsBoss: true 
+    });
 });
 
 
@@ -77,10 +86,28 @@ it('Should cause decepticon to flee based on  courage and strength', () => {
 
     const battleResult = _battle(decepticons, autobots);
 
-    expect(battleResult.winningTeam[0]).toEqual(' Landwhip');
-    expect(battleResult.winningTeamName).toEqual('autobots');
-    expect(battleResult.loosingTeamName).toEqual('decepticons');
-    expect(battleResult.battles).toEqual(1);
+    expect(battleResult).toEqual({
+      battles: 1,
+      winningTeam: [ ' Landwhip' ],
+      winningTeamName: 'autobots',
+      loosingTeamName: 'decepticons',
+      loosingTeam: [],
+      survivors: [],
+      autobots: 
+       [ { type: 'Autobot',
+           strength: 8,
+           intelligence: 0,
+           speed: 0,
+           endurance: 10,
+           rank: 0,
+           courage: 7,
+           firepower: 0,
+           skill: 0,
+           name: 'Landwhip',
+           overallrating: 0 } ],
+      decepticons: [],
+      bossVsBoss: false 
+    });
 });
 
 it('Should cause autobot to flee (Decepticon Overall Rating is higher)', () => {
@@ -113,9 +140,28 @@ it('Should cause autobot to flee (Decepticon Overall Rating is higher)', () => {
     }];
 
     const battleResult = _battle(decepticons, autobots);
+    //console.log(battleResult);
 
-    expect(battleResult.winningTeam[0]).toEqual(' Rumblebeast');
-    expect(battleResult.winningTeamName).toEqual('decepticons');
-    expect(battleResult.loosingTeamName).toEqual('autobots');
-    expect(battleResult.battles).toEqual(1);
+    expect(battleResult).toEqual({ 
+      battles: 1,
+      winningTeam: [ ' Rumblebeast' ],
+      winningTeamName: 'decepticons',
+      loosingTeamName: 'autobots',
+      loosingTeam: [],
+      survivors: [],
+      autobots: [],
+      decepticons: 
+       [ { type: 'Decepticon',
+           strength: 0,
+           intelligence: 0,
+           speed: 0,
+           endurance: 0,
+           rank: 0,
+           courage: 0,
+           firepower: 0,
+           skill: 0,
+           name: 'Rumblebeast',
+           overallrating: 27 } ],
+      bossVsBoss: false 
+    });
 });

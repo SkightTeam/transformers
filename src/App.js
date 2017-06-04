@@ -32,15 +32,17 @@ class App extends PureComponent {
         if (decepticons && autobots) {
             showDecepticons = decepticons.map((decepticon, index) => <Chart key={`${index}${decepticon.overallrating}`} attributes={decepticon} />);
             showAutobots = autobots.map((autobot, index) => <Chart key={`${index}${autobot.overallrating}`} attributes={autobot} />);
-            displayGenerationResult = <h3>{`${decepticons.length} Decepticons and ${autobots.length} Autobots were generated `}</h3>;
+            displayGenerationResult = <h3>{`${decepticons.length} Decepticons and ${autobots.length} Autobots were generated! `}</h3>;
         }
 
         if (battleResult) {
             battleResultText = (
                 <div>
                      <h3>{`Battles: ${battleResult.battles}`}</h3>
-                     <h3>{`Winning Team (${battleResult.winningTeamName}): ${String(battleResult.winningTeam)}`}</h3>
-                     <h3>{`Survivors from the loosing team (${battleResult.loosingTeamName}): ${String(battleResult.loosingTeam)}`}</h3>
+                     <h3>{`Winning Team (${battleResult.winningTeamName}):`}</h3>
+                     <p>{`${String(battleResult.winningTeam)}`}</p>
+                     <h3>{`Survivors from the loosing team (${battleResult.loosingTeamName}):`}</h3>
+                     <p>{`${String(battleResult.loosingTeam)}`}</p>
                 </div>
             );
         }
@@ -87,7 +89,7 @@ class App extends PureComponent {
     }
 
     _getControls() {
-        const { numberOfTransformers, decepticons, autobots, loading } = this.state;
+        const { battleResult, numberOfTransformers, decepticons, autobots, loading } = this.state;
 
         let controls = (
              <div>
@@ -110,6 +112,11 @@ class App extends PureComponent {
                 </div>
               );
         }
+
+        if (battleResult) {
+            controls = null;
+        }
+
         return controls;
     }
 
@@ -135,7 +142,7 @@ class App extends PureComponent {
                     this.setState({ loading: false});
                 });
             });
-            }, 2000);
+            }, 1000);
         });
 
     }
