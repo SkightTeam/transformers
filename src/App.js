@@ -1,9 +1,9 @@
 import './App.css';
 
 import React, { PureComponent } from 'react';
-import Chart from './components/Chart';
-import { _generateTransformers, _createTeams, _battle } from './code';
+import { _battle, _createTeams, _generateTransformers } from './code';
 
+import Chart from './components/Chart';
 import logo from './logo.svg';
 
 class App extends PureComponent {
@@ -13,46 +13,69 @@ class App extends PureComponent {
             numberOfTransformers: null,
             transformers: null,
             decepticons: null,
-            autobots: null
+            autobots: null,
+            battleResult: null,
+            loading: false
         };
     }
 
     render() {
-        //console.log('state', this.state);
+        console.log('state', this.state);
 
-        const { numberOfTransformers, decepticons, autobots } = this.state;
-        //const chartData = this._getChartData(data);
+        const { loading, battleResult, decepticons, autobots } = this.state;
+
         let showDecepticons = null;
         let showAutobots = null;
-        let displayBattleResult = <h3>Enter the number of transformers for the battle and hit submit</h3>;
+        let displayGenerationResult = <h3>Enter the number of transformers to generate.</h3>;
+        let battleResultText = null;
+        let bossBattleText = null;
+
         if (decepticons && autobots) {
             showDecepticons = decepticons.map((decepticon, index) => <Chart key={`${index}${decepticon.overallrating}`} attributes={decepticon} />);
-            showAutobots = autobots.map((autobot, index) => <Chart key={`${index}${autobot.overallrating}`} attributes={autobot} />)
-            displayBattleResult = <h3>{`${decepticons.length} Decepticon and ${autobots.length} Autobots were generated `}</h3>;
+            showAutobots = autobots.map((autobot, index) => <Chart key={`${index}${autobot.overallrating}`} attributes={autobot} />);
+            displayGenerationResult = <h3>{`${decepticons.length} Decepticons and ${autobots.length} Autobots were generated `}</h3>;
+        }
+
+        if (loading) {
+            displayGenerationResult = <h3>LOADING ...</h3>;
+        }
+
+        if (battleResult) {
+            battleResultText = (
+                <div>
+                                         <h3>{`Battles: ${battleResult.battles}`}</h3>
+                                         <h3>{`Winning Team (${battleResult.winningTeamName}): ${String(battleResult.winningTeam)}`}</h3>
+                                         <h3>{`Survivors from the loosing team (${battleResult.loosingTeamName}): ${String(battleResult.loosingTeam)}`}</h3>
+                                 </div>
+            );
+        }
+
+        if (battleResult && battleResult.bossVsBoss) {
+            bossBattleText = (
+                   <div>
+                                            <h1>BOSS VS BOSS !</h1>
+                                            <h3>Optimus Prime and Predaking met in battle</h3>
+                                            <h4>There were no survivors.</h4>
+                                    </div>
+               );
         }
 
         return (
-            <div className="App">
-                <div className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
+            <div className='App'>
+                <div className='App-header'>
+                    <img src='https://cdn.glitch.com/53eb7a5c-011c-474d-ba06-b9b98b7031e1%2Ftransformers.gif?1496564307854' className='App-logo' alt='logo' />
                     <h2>Welcome to Transformer Battles</h2>
                 </div>
-                <div className="App-intro">
-                    {displayBattleResult}
-                    <input
-                        className="terrainInput"
-                        type="text"
-                        placeholder=""
-                        value={this._isPosInt(numberOfTransformers)}
-                        onChange={this._handleInputChange.bind(this)}
-                    />
-                <button onClick={this._handleButtonClick.bind(this)}>submit</button>
+                <div className='App-intro'>
+                {displayGenerationResult}
+                {this._getControls()}
+                {battleResultText}
                 </div>
-                <div className="teamsContainer">
-                  <div className="decepticons items">
+                <div className='teamsContainer row'>
+                  <div className='decepticons col-xs'>
                     {showDecepticons}
                   </div>
-                  <div className="autobots items">
+                  <div className='autobots col-xs'>
                     {showAutobots}
                   </div>
                 </div>
@@ -60,16 +83,43 @@ class App extends PureComponent {
         );
     }
 
+    _getControls() {
+        const { numberOfTransformers, decepticons, autobots } = this.state;
+
+        let controls = (
+             <div>
+                <input
+                    className='input'
+                    type='text'
+                    placeholder='10 or 100 etc..'
+                    value={this._isPosInt(numberOfTransformers)}
+                    onChange={this._handleInputChange.bind(this)}
+                    onKeyPress={this._handleKeyPress.bind(this)}
+                />
+                <button className='btn' onClick={this._handleGenerateButtonClick.bind(this)}>submit</button>
+            </div>
+        );
+
+        if (decepticons && autobots) {
+            controls = (
+                <div className='App-intro'>
+                    <button className='btn' onClick={this._handleBattleButtonClick.bind(this)}>BATTLE!</button>
+                </div>
+              );
+        }
+        return controls;
+    }
+
     _displayDecepticons() {
-      const { decepticons } = this.state;
-      decepticons.map((decepticon) => <Chart attributes={decepticon} />);
+        const { decepticons } = this.state;
+        decepticons.map((decepticon) => <Chart attributes={decepticon} />);
     }
 
     _handleInputChange(event) {
         this.setState({ numberOfTransformers: event.target.value });
     }
 
-    _handleButtonClick() {
+    _handleGenerateButtonClick() {
         const { numberOfTransformers } = this.state;
         if (!numberOfTransformers) {
             this.setState({ numberOfTransformers: null });
@@ -78,8 +128,21 @@ class App extends PureComponent {
 
         const transformers = _generateTransformers(numberOfTransformers);
         const {decepticons, autobots} = _createTeams(transformers);
-        //console.log(_battle(decepticons, autobots))
+
         this.setState({ transformers, decepticons, autobots });
+    }
+
+    _handleBattleButtonClick() {
+        const { decepticons, autobots } = this.state;
+
+        const battleResult = _battle(decepticons, autobots);
+        this.setState({ battleResult });
+    }
+
+    _handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            this._handleGenerateButtonClick();
+        }
     }
 
     // Format data in the way Victory js wants it
