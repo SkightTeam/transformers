@@ -157,13 +157,19 @@ export const _battle = (decepticons, autobots) => {
         }
 
     });
+    
+    let winningTeamName = null;
+    let loosingTeamName = null;
+    if (battleResult.autobots.length > battleResult.decepticons.length ) winningTeamName = 'autobots';
+    if (battleResult.autobots.length < battleResult.decepticons.length) loosingTeamName = 'autobots';  
+    if (battleResult.decepticons.length > battleResult.autobots.length ) winningTeamName = 'decepticons';
+    if (battleResult.decepticons.length < battleResult.autobots.length) loosingTeamName = 'decepticons';
 
-    const winningTeamName = battleResult.autobots.length > battleResult.decepticons.length ? 'autobots' : 'decepticons';
-    const loosingTeamName = battleResult.autobots.length < battleResult.decepticons.length ? 'autobots' : 'decepticons';
+
     battleResult.winningTeamName = winningTeamName;
     battleResult.loosingTeamName = loosingTeamName;
-    battleResult.winningTeam = battleResult[winningTeamName].map(({name}) => ` ${name}`);
-    battleResult.loosingTeam = battleResult[loosingTeamName].map(({name}) => ` ${name}`);
+    battleResult.winningTeam = (battleResult[winningTeamName] || []).map(({name}) => ` ${name}`);
+    battleResult.loosingTeam = (battleResult[loosingTeamName] || []).map(({name}) => ` ${name}`);
 
     return battleResult;
 
