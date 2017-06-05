@@ -4,7 +4,6 @@ import React, { PureComponent } from 'react';
 import { _battle, _createTeams, _generateTransformers } from './code';
 
 import Chart from './components/Chart';
-import uuidV4 from 'uuid/v4';
 
 class App extends PureComponent {
     constructor() {
@@ -114,7 +113,11 @@ class App extends PureComponent {
         }
 
         if (battleResult) {
-            controls = null;
+            controls = (
+                <div className='App-intro'>
+                    <button className='btn' disabled="disabled">DONE!</button>
+                </div>
+            );
         }
 
         return controls;
@@ -142,7 +145,7 @@ class App extends PureComponent {
                     this.setState({ loading: false});
                 });
             });
-            }, 1000);
+            }, 500);
         });
 
     }

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { VictoryBar, VictoryChart, VictoryLabel, VictoryTheme } from 'victory';
+import { VictoryBar, VictoryChart, VictoryLabel } from 'victory';
 
 class Chart extends PureComponent {
 
