@@ -1,18 +1,21 @@
 import rn from 'random-number';
 import {transformerNames} from './names';
 
+// Options for random attributes generation
 const attrRNGOptions = {
     min:  0,
     max:  10,
     integer: true
 };
 
+// Options for random name generation
 const nameRNGOptions = {
     min:  0,
     max:  30,
     integer: true
 };
 
+// Options for random team affiliation
 const typeRNGOptions = {
     min:  0,
     max:  1,
@@ -20,7 +23,12 @@ const typeRNGOptions = {
 };
 
 const faction = ['Autobot', 'Decepticon'];
+const overallRatingBlackList = ['type', 'rank', 'courage', 'skill', 'name'];
 
+/**
+ * Generates a Transformer with random stats snad affiliation
+ * @function _getAttributes
+ */
 const _getAttributes = () => {
     const team = faction[rn(typeRNGOptions)];
     const name = transformerNames[team][rn(nameRNGOptions)];
@@ -38,9 +46,12 @@ const _getAttributes = () => {
     };
 };
 
-const overallRatingBlackList = ['type', 'rank', 'courage', 'skill', 'name'];
-
-const getOverallRating = transformer => {
+/**
+ * Used by calculateOverallRating() to calculate overall rating of an array of transformers
+ * @function getOverallRating
+ * @param {object} - transformer object
+ */
+const _getOverallRating = transformer => {
 
     const transformerkeys = Object.keys(transformer);
     const filteredTranformerKeys = transformerkeys.filter((key) => overallRatingBlackList.indexOf(key) === -1);
@@ -53,11 +64,22 @@ const getOverallRating = transformer => {
     return transformer;
 };
 
+/**
+ * Calculate overall rating of an array of transformers
+ * @function calculateOverallRating
+ * @param {array} - transformers array
+ */
 const calculateOverallRating = (transformers) => {
-    return transformers.map(transformer => getOverallRating(transformer));
+    return transformers.map(transformer => _getOverallRating(transformer));
 
 };
 
+/**
+ * Compares 2 transformers based on courage and strength attributes
+ * @function courageStrengthCase
+ * @param {object} transformer1 - 1st transformer object
+ * @param {object} transformer2 - 2nd transformer object
+ */
 const courageStrengthCase = (transformer1, transformer2) => {
     if (
       Number(transformer1.courage) - Number(transformer2.courage) <= -4 &&
@@ -68,6 +90,12 @@ const courageStrengthCase = (transformer1, transformer2) => {
     return false;
 };
 
+/**
+ * Compares 2 transformers based on skill attribute
+ * @function skillCase
+ * @param {object} transformer1 - 1st transformer object
+ * @param {object} transformer2 - 2nd transformer object
+ */
 const skillCase = (transformer1, transformer2) => {
     if (Number(transformer1.skill) - Number(transformer2.skill) >= 3) {
         return true;
@@ -75,6 +103,12 @@ const skillCase = (transformer1, transformer2) => {
     return false;
 };
 
+/**
+ * Compares 2 transformers based on overallrating attribute
+ * @function overallRatingCase
+ * @param {object} transformer1 - 1st transformer object
+ * @param {object} transformer2 - 2nd transformer object
+ */
 const overallRatingCase = (transformer1, transformer2) => {
     if (Number(transformer1.overallrating) > Number(transformer2.overallrating)) {
         return true;
@@ -82,6 +116,12 @@ const overallRatingCase = (transformer1, transformer2) => {
     return false;
 };
 
+/**
+ * Compares 2 transformers based on overallrating attribute
+ * @function _battle
+ * @param {array} decepticons - decepticons array
+ * @param {array} autobots - autobots array
+ */
 export const _battle = (decepticons, autobots) => {
     const battleResult = {
         battles: 0,
@@ -157,14 +197,13 @@ export const _battle = (decepticons, autobots) => {
         }
 
     });
-    
+
     let winningTeamName = null;
     let loosingTeamName = null;
-    if (battleResult.autobots.length > battleResult.decepticons.length ) winningTeamName = 'autobots';
-    if (battleResult.autobots.length < battleResult.decepticons.length) loosingTeamName = 'autobots';  
-    if (battleResult.decepticons.length > battleResult.autobots.length ) winningTeamName = 'decepticons';
+    if (battleResult.autobots.length > battleResult.decepticons.length) winningTeamName = 'autobots';
+    if (battleResult.autobots.length < battleResult.decepticons.length) loosingTeamName = 'autobots';
+    if (battleResult.decepticons.length > battleResult.autobots.length) winningTeamName = 'decepticons';
     if (battleResult.decepticons.length < battleResult.autobots.length) loosingTeamName = 'decepticons';
-
 
     battleResult.winningTeamName = winningTeamName;
     battleResult.loosingTeamName = loosingTeamName;
@@ -175,6 +214,11 @@ export const _battle = (decepticons, autobots) => {
 
 };
 
+/**
+ * Creates autobot and decepticon teams from single generated transformers array
+ * @function _createTeams
+ * @param {array} transformers - transformers array
+ */
 export const _createTeams = (transformers) => {
     const decepticons = transformers.filter(({type}) => type === 'Decepticon').sort((a, b) => {
         if (a.rank < b.rank)
@@ -193,6 +237,11 @@ export const _createTeams = (transformers) => {
     return {decepticons, autobots};
 };
 
+/**
+ * Creates autobot and decepticon teams from single generated transformers array
+ * @function _generateTransformers
+ * @param {number} numberOfTransformers - number of transformers to generate
+ */
 export const _generateTransformers = (numberOfTransformers) => {
     const transformers = [];
     for (let i = 0; i < numberOfTransformers; i += 1) {
