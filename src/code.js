@@ -26,7 +26,7 @@ const faction = ['Autobot', 'Decepticon'];
 const overallRatingBlackList = ['type', 'rank', 'courage', 'skill', 'name'];
 
 /**
- * Generates a Transformer with random stats snad affiliation
+ * Generates a Transformer with random stats and affiliation
  * @function _getAttributes
  */
 const _getAttributes = () => {
@@ -117,7 +117,7 @@ const overallRatingCase = (transformer1, transformer2) => {
 };
 
 /**
- * Compares 2 transformers based on overallrating attribute
+ * Main function to initiate the battle
  * @function _battle
  * @param {array} decepticons - decepticons array
  * @param {array} autobots - autobots array
